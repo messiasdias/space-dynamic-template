@@ -1,4 +1,4 @@
-=== RodrigoAguilar ===
+=== Space Dynamic Template ===
 Contributors: Messias Dias
 Tags: one-page, portfolio, blog, post, services
 Requires at least: 1.0

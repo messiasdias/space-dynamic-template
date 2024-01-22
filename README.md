@@ -4,5 +4,4 @@
 
 ![Screenshot](screenshot.png?raw=true "Curriculum")
 
-
 #### Customized by: [Messias Dias](https://github.com/messiasdias)

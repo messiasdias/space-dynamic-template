@@ -2,6 +2,15 @@
 
 add_theme_support('post-thumbnails');
 
+add_theme_support('custom-logo', array(
+	'height' => 60,
+	'width' => 200,
+	'flex-height' => true,
+	'flex-width' => true,
+	'header-text' => array('site-title', 'site-description'),
+));
+
+
 // Our custom post Portfolio function
 function create_type_portfolio()
 {
@@ -24,7 +33,8 @@ function create_type_portfolio()
 			'show_in_rest' => true,
 			'show_in_menu' => true,
 			'supports' =>  array('thumbnail', 'title', 'editor', 'comments', 'exerpt'),
-			'menu_icon' => 'dashicons-format-gallery'
+			'menu_icon' => 'dashicons-format-gallery',
+			'menu_position' => 5
 		)
 	);
 }
@@ -48,13 +58,38 @@ function create_type_services()
 			'public' => true,
 			'has_archive' => true,
 			'rewrite' => array('slug' => '/services'),
-			'supports' => array('thumbnail', 'title', 'editor', 'comments'),
-			'menu_icon' => 'dashicons-admin-tools'
+			'supports' => array('title'),
+			'menu_icon' => 'dashicons-admin-tools',
+			'menu_position' => 6
 		)
 	);
 }
 // Hooking up our function to theme setup
 add_action( 'init', 'create_type_services' );
+
+
+function add_meta_boxes_services(){
+	add_meta_box(
+		'meta_services_percent', 
+		'Porcentagem', 
+		function($post) {
+			echo '<input type="number" name="meta_services_percent" max="100" min="0" value="'.get_post_meta( $post->ID, 'meta_services_percent', true).'"  />';
+		}, 
+		'services', 	
+		'normal',
+		'default'
+	);
+}
+
+add_action('add_meta_boxes', 'add_meta_boxes_services');
+
+
+function save_meta_boxes_services($post_id){
+	if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return ;
+	update_post_meta($post_id, 'meta_services_percent', (int) $_POST['meta_services_percent']);
+}
+
+add_action('save_post', 'save_meta_boxes_services');
 
 
 // Our custom post type function
@@ -75,13 +110,15 @@ function create_type_about_us()
 			'public' => true,
 			'has_archive' => true,
 			'rewrite' => array('slug' => '/about-us'),
-			'supports' => array('thumbnail', 'title', 'editor', 'comments'),
-			'menu_icon' => 'dashicons-businessperson'
+			'supports' => array('thumbnail', 'title', 'editor'),
+			'menu_icon' => 'dashicons-businessperson',
+			'menu_position' => 7
 		)
 	);
 }
 // Hooking up our function to theme setup
 add_action( 'init', 'create_type_about_us');
+
 
 
 function home_section_top($wp_customize)
@@ -91,6 +128,7 @@ function home_section_top($wp_customize)
 		array(
 			'title' => 'Home Page Topo',
 			'description' => 'Configurações da seção Top (Início) do Site',
+			'priority' => 20
 		)
 	);
 
@@ -124,15 +162,12 @@ function home_section_top($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_top_welcome',
-			array(
-				'type' => 'text',
-				'label' =>  'Welcome Message',
-				'section' => 'home_section_top',
-				'settings' => 'section_top_welcome',
-			)
+		'section_top_welcome',
+		array(
+			'type' => 'textarea',
+			'label' =>  'Welcome Message',
+			'section' => 'home_section_top',
+			'settings' => 'section_top_welcome',
 		)
 	);
 	
@@ -145,15 +180,12 @@ function home_section_top($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_top_title',
-			array(
-				'type' => 'textarea',
-				'label' =>  'Título',
-				'section' => 'home_section_top',
-				'settings' => 'section_top_title',
-			)
+		'section_top_title',
+		array(
+			'type' => 'textarea',
+			'label' =>  'Título',
+			'section' => 'home_section_top',
+			'settings' => 'section_top_title',
 		)
 	);
 
@@ -166,15 +198,12 @@ function home_section_top($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_top_text',
-			array(
-				'type' => 'textarea',
-				'label' =>  'Texto',
-				'section' => 'home_section_top',
-				'settings' => 'section_top_text',
-			)
+		'section_top_text',
+		array(
+			'type' => 'textarea',
+			'label' =>  'Texto',
+			'section' => 'home_section_top',
+			'settings' => 'section_top_text',
 		)
 	);
 }
@@ -189,6 +218,7 @@ function home_section_about($wp_customize)
 		array(
 			'title' => 'Home Page Sobre',
 			'description' => 'Configurações da seção About (Sobre) do Site',
+			'priority' => 21
 		)
 	);
 
@@ -224,6 +254,7 @@ function home_section_services($wp_customize)
 		array(
 			'title' => 'Home Page Serviços',
 			'description' => 'Configurações da seção Services (Serviços) do Site',
+			'priority' => 21
 		)
 	);
 
@@ -257,15 +288,12 @@ function home_section_services($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_services_title',
-			array(
-				'type' => 'textarea',
-				'label' =>  'Título',
-				'section' => 'home_section_services',
-				'settings' => 'section_services_title',
-			)
+		'section_services_title',
+		array(
+			'type' => 'textarea',
+			'label' =>  'Título',
+			'section' => 'home_section_services',
+			'settings' => 'section_services_title',
 		)
 	);
 
@@ -278,15 +306,12 @@ function home_section_services($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_services_text',
-			array(
-				'type' => 'textarea',
-				'label' =>  'Texto',
-				'section' => 'home_section_services',
-				'settings' => 'section_services_text',
-			)
+		'section_services_text',
+		array(
+			'type' => 'textarea',
+			'label' =>  'Texto',
+			'section' => 'home_section_services',
+			'settings' => 'section_services_text',
 		)
 	);
 }
@@ -300,6 +325,7 @@ function home_section_portfolio($wp_customize){
 		array(
 			'title' => 'Home Page Portifólio',
 			'description' => 'Configurações da seção Portfolio (Portifólio) do Site',
+			'priority' => 22
 		)
 	);
 
@@ -312,15 +338,12 @@ function home_section_portfolio($wp_customize){
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_portifolio_title',
-			array(
-				'type' => 'textarea',
-				'label' =>  'Título',
-				'section' => 'home_section_portifolio',
-				'settings' => 'section_portifolio_title',
-			)
+		'section_portifolio_title',
+		array(
+			'type' => 'textarea',
+			'label' =>  'Título',
+			'section' => 'home_section_portifolio',
+			'settings' => 'section_portifolio_title',
 		)
 	);
 }
@@ -334,6 +357,7 @@ function home_section_blog($wp_customize){
 		array(
 			'title' => 'Home Page Blog',
 			'description' => 'Configurações da seção Blog (Posts) do Site',
+			'priority' => 23
 		)
 	);
 
@@ -389,6 +413,7 @@ function home_section_contact($wp_customize)
 		array(
 			'title' => 'Home Page Contato',
 			'description' => 'Configurações da seção Contact (Contato) do Site',
+			'priority' => 23
 		)
 	);
 
@@ -422,15 +447,12 @@ function home_section_contact($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_contact_title',
-			array(
-				'type' => 'textarea',
-				'label' =>  'Título',
-				'section' => 'home_section_contact',
-				'settings' => 'section_contact_title',
-			)
+		'section_contact_title',
+		array(
+			'type' => 'textarea',
+			'label' =>  'Título',
+			'section' => 'home_section_contact',
+			'settings' => 'section_contact_title',
 		)
 	);
 
@@ -443,15 +465,12 @@ function home_section_contact($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_contact_subtitle',
-			array(
-				'type' => 'textarea',
-				'label' =>  'Subtítulo',
-				'section' => 'home_section_contact',
-				'settings' => 'section_contact_subtitle',
-			)
+		'section_contact_subtitle',
+		array(
+			'type' => 'textarea',
+			'label' =>  'Subtítulo',
+			'section' => 'home_section_contact',
+			'settings' => 'section_contact_subtitle',
 		)
 	);
 
@@ -464,15 +483,12 @@ function home_section_contact($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_contact_text',
-			array(
-				'type' => 'textarea',
-				'label' =>  'Texto',
-				'section' => 'home_section_contact',
-				'settings' => 'section_contact_text',
-			)
+		'section_contact_text',
+		array(
+			'type' => 'textarea',
+			'label' =>  'Texto',
+			'section' => 'home_section_contact',
+			'settings' => 'section_contact_text',
 		)
 	);
 	
@@ -485,15 +501,12 @@ function home_section_contact($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_contact_email',
-			array(
-				'type' => 'text',
-				'label' =>  'Email - Caixa de Entrada',
-				'section' => 'home_section_contact',
-				'settings' => 'section_contact_email',
-			)
+		'section_contact_email',
+		array(
+			'type' => 'text',
+			'label' =>  'Email - Caixa de Entrada',
+			'section' => 'home_section_contact',
+			'settings' => 'section_contact_email',
 		)
 	);
 	
@@ -506,15 +519,12 @@ function home_section_contact($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_contact_wpphone',
-			array(
-				'type' => 'number',
-				'label' =>  'Número do Whathsapp',
-				'section' => 'home_section_contact',
-				'settings' => 'section_contact_wpphone',
-			)
+		'section_contact_wpphone',
+		array(
+			'type' => 'number',
+			'label' =>  'Número do Whathsapp',
+			'section' => 'home_section_contact',
+			'settings' => 'section_contact_wpphone',
 		)
 	);
 
@@ -527,15 +537,12 @@ function home_section_contact($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'section_contact_wpmessage',
-			array(
-				'type' => 'text',
-				'label' =>  'Mensagem de contato do Whathsapp',
-				'section' => 'home_section_contact',
-				'settings' => 'section_contact_wpmessage',
-			)
+		'section_contact_wpmessage',
+		array(
+			'type' => 'text',
+			'label' =>  'Mensagem de contato do Whathsapp',
+			'section' => 'home_section_contact',
+			'settings' => 'section_contact_wpmessage',
 		)
 	);
 
@@ -562,3 +569,14 @@ function home_section_contact($wp_customize)
 }
 
 add_action('customize_register', 'home_section_contact');
+
+
+function remove_sections($wp_customize){
+	//$wp_customize->remove_section('title_tagline');
+	$wp_customize->remove_section('custom_css');
+	$wp_customize->remove_section('colors');
+	$wp_customize->remove_section('static_front_page');
+	$wp_customize->remove_panel('panel-nav_menus');
+}
+
+add_action('customize_register', 'remove_sections');

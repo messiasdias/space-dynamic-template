@@ -103,8 +103,8 @@
                         <div class="col-lg-12">
                             <div class="progress-skill-bar">
                                 <h4><?php echo the_title(); ?></h4>
-                                <span style="left: 100% !important;"><?php echo get_the_excerpt() . "%"; ?></span>
-                                <div class="filled-bar" style="width: <?php echo get_the_excerpt() . "%"; ?> !important;"></div>
+                                <span style="left: 100% !important;"><?php echo (int) get_post_meta($post->ID, 'meta_services_percent', true) . "%"; ?></span>
+                                <div class="filled-bar" style="width: <?php echo (int) get_post_meta($post->ID, 'meta_services_percent', true) . "%"; ?> !important;"></div>
                                 <div class="full-bar"></div>
                             </div>
                         </div>
